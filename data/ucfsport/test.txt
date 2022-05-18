@@ -1,0 +1,5 @@
+data/ucfsport/Riding-Horse/,26
+data/ucfsport/Riding-Horse/,13
+data/ucfsport/Riding-Horse/,38
+data/ucfsport/Riding-Horse/,23
+data/ucfsport/Riding-Horse/,14
