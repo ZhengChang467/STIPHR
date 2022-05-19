@@ -8,7 +8,7 @@ Wen Gao.
 
 Official PyTorch Code for **"STIP: A Spatiotemporal Information-Preserving and Perception-Augmented Model for High-Resolution Video Prediction"**
 
-This work is extended from our previous work STRPM, which has been accepted by CVPR2022. The [codes](https://github.com/ZhengChang467/STRPM) for STRPM has also been made public.
+This work is extended from our previous work STRPM, which has been accepted by CVPR2022. The [codes](https://github.com/ZhengChang467/STRPM) for STRPM have also been made public.
 
 ### Requirements
 - PyTorch 1.7.1
