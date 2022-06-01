@@ -4,9 +4,9 @@ import numpy as np
 from core.data_provider import datasets_factory
 from core.models.model_factory import Model
 import core.trainer as trainer
-import pynvml
+# import pynvml
 
-pynvml.nvmlInit()
+# pynvml.nvmlInit()
 configs = argparse.ArgumentParser(description='STIP')
 configs.add_argument('--dataset', type=str, default='ucfsport')
 configs = configs.parse_args()
@@ -67,8 +67,8 @@ def schedule_sampling(eta, itr, batch_size):
 def train_wrapper(model):
     begin = 0
     # pynvml.nvmlInit()
-    handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-    meminfo_begin = pynvml.nvmlDeviceGetMemoryInfo(handle)
+    # handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+    # meminfo_begin = pynvml.nvmlDeviceGetMemoryInfo(handle)
 
     if args.pretrained_model_pm and args.pretrained_model_d:
         model.load(args.pretrained_model_pm, args.pretrained_model_d)
@@ -107,8 +107,8 @@ def train_wrapper(model):
             if itr % args.snapshot_interval == 0 and itr > begin:
                 model.save(itr)
             itr += 1
-            meminfo_end = pynvml.nvmlDeviceGetMemoryInfo(handle)
-            print("GPU memory:%dM" % ((meminfo_end.used - meminfo_begin.used) / (1024 ** 2)))
+            # meminfo_end = pynvml.nvmlDeviceGetMemoryInfo(handle)
+            # print("GPU memory:%dM" % ((meminfo_end.used - meminfo_begin.used) / (1024 ** 2)))
 
 
 def test_wrapper(model):

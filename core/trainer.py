@@ -26,6 +26,22 @@ def train(model, ims, real_input_flag, configs, itr):
               'Discriminator_gen: ' + str(d_gen),
               'Discriminator_gen_pre: ' + str(d_gen_pre))
 
+def visualization_features(features, configs, batch_id):
+    # tmp = gates[3][5][5].detach().cpu().numpy().transpose(0, 2, 3, 4, 1)
+    # print(tmp.shape)
+    features_name = ['t', 's', 'r', 'u']
+    for feature_id in range(4):
+        # print(features[feature_id].shape)
+        feature_data = preprocess.reshape_patch_back(features[feature_id], 8).mean(axis=-1)
+        res = np.ones(shape=(128, 128*(configs.total_length-1)))*255.
+        # print(feature_data.shape)
+        for time_step in range(configs.total_length-1):
+            res[:, time_step*128:(time_step+1)*128] = feature_data[0][time_step][:]
+        res/=res.max()
+        res = np.maximum(res, 0)
+        res = np.minimum(res, 1)
+        res*=255        
+        cv2.imwrite(configs.gen_frm_dir+'/1/'+features_name[feature_id]+'_'+str(batch_id)+'.png', res)
 
 def test(model, test_input_handle, configs, itr):
     print('test...')
@@ -68,7 +84,9 @@ def test(model, test_input_handle, configs, itr):
                  configs.img_width // configs.patch_size,
                  configs.patch_size ** 2 * configs.img_channel))
 
-            img_gen = model.test(test_ims, real_input_flag).transpose(0, 1, 3, 4, 2)
+            img_gen, features = model.test(test_ims, real_input_flag)
+            # visualization_features(features, configs, batch_id)
+            img_gen = img_gen.transpose(0, 1, 3, 4, 2)
             test_ims = test_ims.detach().cpu().numpy().transpose(0, 1, 3, 4, 2)
             output_length = configs.total_length - configs.input_length
             output_length = min(output_length, configs.total_length - 1)

@@ -37,4 +37,4 @@ class STGRUCell(nn.Module):
         S_new = (1 - Z_t) * S_tmp + Z_t * S_t
         # H_new = self.conv_last(torch.cat([T_new, S_new], dim=1))
 
-        return T_new, S_new
+        return T_new, S_new, R_t, Z_t

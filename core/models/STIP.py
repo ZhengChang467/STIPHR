@@ -162,6 +162,10 @@ class RNN(nn.Module):
         width = frames.shape[4] // self.configs.sr_size
         frame_channels = frames.shape[2]
         next_frames = []
+        features_t = []
+        features_s = []
+        R_gates = []
+        U_gates = []
         T_t = []
         x_gen = []
         time = self.time
@@ -199,10 +203,16 @@ class RNN(nn.Module):
                     zeros = torch.zeros([batch_size, self.num_hidden[i], height, width]).to(self.configs.device)
                     T_t.append(zeros)
             S_t = frames_s_feature
+
+            features_t.append(frames_t_feature)
+            features_s.append(frames_s_feature)
             for i in range(self.num_layers):
                 if i == 0:
                     T_t[i] = self.merge_t(torch.cat([T_t[i], frames_t_feature], dim=1))
-                T_t[i], S_t = self.cell_list[i](T_t[i], S_t)
+                T_t[i], S_t, r, u = self.cell_list[i](T_t[i], S_t)
+                if(i==1):
+                    R_gates.append(r)
+                    U_gates.append(u)
             out_s = T_t[-1]
             out_t = S_t
             for i in range(len(self.s_decoders)):
@@ -218,4 +228,14 @@ class RNN(nn.Module):
             x_gen = self.conv_last_sr(torch.cat([out_s, out_t], dim=1))
             next_frames.append(x_gen)
         next_frames = torch.stack(next_frames, dim=0).permute(1, 0, 2, 3, 4).contiguous()
-        return next_frames
+        features = []
+        features_t = torch.stack(features_t, dim=0).permute(1, 0, 3, 4, 2).contiguous()
+        features_s = torch.stack(features_s, dim=0).permute(1, 0, 3, 4, 2).contiguous()
+        R_gates = torch.stack(R_gates, dim=0).permute(1, 0, 3, 4, 2).contiguous()
+        U_gates = torch.stack(U_gates, dim=0).permute(1, 0, 3, 4, 2).contiguous()
+        features.append(features_t)
+        features.append(features_s)
+        features.append(R_gates)
+        features.append(U_gates)
+        features = torch.stack(features, dim=0)
+        return next_frames, features
